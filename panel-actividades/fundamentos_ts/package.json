@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "start": "tsx src/main.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
