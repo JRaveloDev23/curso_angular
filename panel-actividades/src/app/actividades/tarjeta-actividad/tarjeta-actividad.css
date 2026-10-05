@@ -1,92 +1,66 @@
-:host {
-  display: block;
-  margin-top: 2rem;
+.tarjeta {
+  border: 1px solid #d4d4d4;
+  border-left: 4px solid #d4d4d4;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  min-width: 0;
 }
 
-.actividad-destacada {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-left: 4px solid #94a3b8;
-  border-radius: 8px;
-  padding: 1.2rem;
+.tarjeta h4 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
 }
 
-.actividad-destacada.prioridad-alta {
-  border-left-color: #b91c1c;
+.tarjeta h4,
+.tarjeta p {
+  overflow-wrap: anywhere;
 }
 
-.encabezado-actividad {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem 1rem;
-  align-items: baseline;
-  justify-content: space-between;
+.tarjeta.destacada {
+  border-left-color: #545454;
+  background: #f6f6f6;
 }
 
-.estado {
-  padding: .15rem .6rem;
-  border-radius: 999px;
-  font-size: .85rem;
-  font-weight: 600;
+.tarjeta.seleccionada {
+  outline: 2px solid #545454;
+  outline-offset: 2px;
 }
 
-.estado-pendiente {
-  background: #fee2e2;
-  color: #991b1b;
+.prioridad {
+  font-size: 0.85rem;
+  margin: 0 0 0.25rem;
 }
 
-.estado-progreso {
-  background: #fef3c7;
-  color: #92400e;
+.prioridad-alta {
+  font-weight: 700;
 }
 
-.estado-completada {
-  background: #dcfce7;
-  color: #166534;
+.prioridad-media {
+  font-weight: 500;
 }
 
-.barra-progreso {
-  height: .6rem;
-  margin: 1rem 0 .3rem;
-  background: #e2e8f0;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.barra-progreso span {
-  display: block;
-  height: 100%;
-  background: #1d4ed8;
-}
-
-.porcentaje {
-  margin: 0 0 .8rem;
-  font-size: .9rem;
-  color: #52606d;
+.prioridad-baja {
+  font-weight: 400;
 }
 
 .acciones {
   display: flex;
   flex-wrap: wrap;
-  gap: .6rem;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
 }
 
-.acciones button {
-  font: inherit;
-  padding: .5rem .9rem;
-  border: 1px solid #94a3b8;
-  border-radius: 6px;
-  background: #ffffff;
+button {
+  padding: 0.4rem 0.75rem;
   cursor: pointer;
 }
 
-.acciones .accion-principal {
-  background: #1d4ed8;
-  border-color: #1d4ed8;
-  color: #ffffff;
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
-.acciones button:disabled {
-  opacity: .55;
-  cursor: not-allowed;
+:focus-visible {
+  outline: 2px solid #545454;
+  outline-offset: 2px;
 }

@@ -1,18 +1,35 @@
-import { Component, computed, effect, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  signal,
+} from '@angular/core';
+
 import {
   Actividad,
   EstadoActividad,
   FiltroEstado,
   FiltroPrioridad,
   Prioridad,
-} from '../modelos/actividad';
+} from '../../modelos/actividad';
+
+import { PanelSeccion } from '../../compartido/panel-seccion/panel-seccion';
+import { ResumenActividades } from '../resumen-actividades/resumen-actividades';
+import { ListaActividades } from '../lista-actividades/lista-actividades';
+import { FiltrosActividades } from '../filtros-actividades/filtros-actividades';
 
 @Component({
-  selector: 'app-tablero-prioridades',
-  templateUrl: './tablero-prioridades.html',
-  styleUrl: './tablero-prioridades.css',
+  selector: 'app-pagina-actividades',
+  imports: [
+    PanelSeccion,
+    ResumenActividades,
+    ListaActividades,
+    FiltrosActividades,
+  ],
+  templateUrl: './pagina-actividades.html',
+  styleUrl: './pagina-actividades.css',
 })
-export class TableroPrioridades {
+export class PaginaActividades {
   private readonly orden: Record<Prioridad, number> = {
     alta: 0,
     media: 1,
@@ -20,9 +37,15 @@ export class TableroPrioridades {
   };
 
   protected readonly termino = signal('');
-  protected readonly filtroEstado = signal<FiltroEstado>('todas');
-  protected readonly filtroPrioridad = signal<FiltroPrioridad>('todas');
-  protected readonly seleccionadaId = signal<number | null>(null);
+
+  protected readonly filtroEstado =
+    signal<FiltroEstado>('todas');
+
+  protected readonly filtroPrioridad =
+    signal<FiltroPrioridad>('todas');
+
+  protected readonly seleccionadaId =
+    signal<number | null>(null);
 
   protected readonly actividades = signal<Actividad[]>([
     {
@@ -67,45 +90,67 @@ export class TableroPrioridades {
     },
   ]);
 
-  protected readonly total = computed(() => this.actividades().length);
+  protected readonly total = computed(
+    () => this.actividades().length,
+  );
 
   protected readonly pendientes = computed(
     () =>
-      this.actividades().filter((a) => a.estado === 'pendiente').length,
+      this.actividades().filter(
+        (actividad) =>
+          actividad.estado === 'pendiente',
+      ).length,
   );
 
   protected readonly enProgreso = computed(
     () =>
-      this.actividades().filter((a) => a.estado === 'en_progreso').length,
+      this.actividades().filter(
+        (actividad) =>
+          actividad.estado === 'en_progreso',
+      ).length,
   );
 
   protected readonly completadas = computed(
     () =>
-      this.actividades().filter((a) => a.estado === 'completada').length,
+      this.actividades().filter(
+        (actividad) =>
+          actividad.estado === 'completada',
+      ).length,
   );
 
   protected readonly porcentaje = computed(() =>
     this.total() === 0
       ? 0
-      : Math.round((this.completadas() / this.total()) * 100),
+      : Math.round(
+          (this.completadas() / this.total()) * 100,
+        ),
   );
 
   protected readonly visibles = computed(() => {
-    const termino = this.termino().trim().toLocaleLowerCase('es');
+    const termino = this.termino()
+      .trim()
+      .toLocaleLowerCase('es');
+
     const estado = this.filtroEstado();
     const prioridad = this.filtroPrioridad();
 
     return this.actividades()
       .filter(
-        (a) =>
+        (actividad) =>
           termino === '' ||
-          a.titulo.toLocaleLowerCase('es').includes(termino),
+          actividad.titulo
+            .toLocaleLowerCase('es')
+            .includes(termino),
       )
       .filter(
-        (a) => estado === 'todas' || a.estado === estado,
+        (actividad) =>
+          estado === 'todas' ||
+          actividad.estado === estado,
       )
       .filter(
-        (a) => prioridad === 'todas' || a.prioridad === prioridad,
+        (actividad) =>
+          prioridad === 'todas' ||
+          actividad.prioridad === prioridad,
       )
       .sort(
         (primera, segunda) =>
@@ -114,7 +159,9 @@ export class TableroPrioridades {
       );
   });
 
-  protected readonly mostradas = computed(() => this.visibles().length);
+  protected readonly mostradas = computed(
+    () => this.visibles().length,
+  );
 
   protected readonly hayFiltros = computed(
     () =>
@@ -132,32 +179,17 @@ export class TableroPrioridades {
   protected readonly seleccionada = computed(
     () =>
       this.actividades().find(
-        (a) => a.id === this.seleccionadaId(),
+        (actividad) =>
+          actividad.id === this.seleccionadaId(),
       ) ?? null,
   );
 
   constructor() {
     effect(() => {
       console.info(
-        `[Tablero] ${this.mostradas()} de ${this.total()} visibles`,
+        `[Pagina] ${this.mostradas()} de ${this.total()} visibles`,
       );
     });
-  }
-
-  protected buscar(evento: Event): void {
-    this.termino.set((evento.target as HTMLInputElement).value);
-  }
-
-  protected cambiarFiltroEstado(evento: Event): void {
-    this.filtroEstado.set(
-      (evento.target as HTMLSelectElement).value as FiltroEstado,
-    );
-  }
-
-  protected cambiarFiltroPrioridad(evento: Event): void {
-    this.filtroPrioridad.set(
-      (evento.target as HTMLSelectElement).value as FiltroPrioridad,
-    );
   }
 
   protected limpiarFiltros(): void {
@@ -174,25 +206,37 @@ export class TableroPrioridades {
 
   protected alternarDestacada(id: number): void {
     this.actividades.update((actuales) =>
-      actuales.map((a) =>
-        a.id === id ? { ...a, destacada: !a.destacada } : a,
+      actuales.map((actividad) =>
+        actividad.id === id
+          ? {
+              ...actividad,
+              destacada: !actividad.destacada,
+            }
+          : actividad,
       ),
     );
   }
 
   protected avanzarEstado(id: number): void {
     this.actividades.update((actuales) =>
-      actuales.map((a) =>
-        a.id === id
-          ? { ...a, estado: this.siguienteEstado(a.estado) }
-          : a,
+      actuales.map((actividad) =>
+        actividad.id === id
+          ? {
+              ...actividad,
+              estado: this.siguienteEstado(
+                actividad.estado,
+              ),
+            }
+          : actividad,
       ),
     );
   }
 
   protected eliminar(id: number): void {
     this.actividades.update((actuales) =>
-      actuales.filter((a) => a.id !== id),
+      actuales.filter(
+        (actividad) => actividad.id !== id,
+      ),
     );
 
     this.seleccionadaId.update((actual) =>
@@ -206,9 +250,17 @@ export class TableroPrioridades {
     this.seleccionadaId.set(null);
   }
 
-  private siguienteEstado(estado: EstadoActividad): EstadoActividad {
-    if (estado === 'pendiente') return 'en_progreso';
-    if (estado === 'en_progreso') return 'completada';
+  private siguienteEstado(
+    estado: EstadoActividad,
+  ): EstadoActividad {
+    if (estado === 'pendiente') {
+      return 'en_progreso';
+    }
+
+    if (estado === 'en_progreso') {
+      return 'completada';
+    }
+
     return 'completada';
   }
 }
