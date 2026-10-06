@@ -1,12 +1,11 @@
 import { Routes } from '@angular/router';
 
 import { PaginaActividades } from './actividades/pagina-actividades/pagina-actividades';
-
 import { DetalleActividad } from './actividades/detalle-actividad/detalle-actividad';
-
 import { SeccionActividades } from './actividades/seccion-actividades/seccion-actividades';
-
 import { PaginaNoEncontrada } from './compartido/pagina-no-encontrada/pagina-no-encontrada';
+
+import { puedeSalir } from './actividades/puede-salir';
 
 export const routes: Routes = [
   {
@@ -27,8 +26,26 @@ export const routes: Routes = [
 
       {
         path: 'nueva',
-        component: PaginaNoEncontrada,
         title: 'Nueva actividad',
+        canDeactivate: [puedeSalir],
+        loadComponent: () =>
+          import(
+            './actividades/formulario-actividad/formulario-actividad'
+          ).then(
+            (m) => m.FormularioActividad,
+          ),
+      },
+
+      {
+        path: ':id/editar',
+        title: 'Editar actividad',
+        canDeactivate: [puedeSalir],
+        loadComponent: () =>
+          import(
+            './actividades/formulario-actividad/formulario-actividad'
+          ).then(
+            (m) => m.FormularioActividad,
+          ),
       },
 
       {

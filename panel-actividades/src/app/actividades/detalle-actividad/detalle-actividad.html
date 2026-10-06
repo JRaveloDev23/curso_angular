@@ -2,53 +2,49 @@
   ← Volver a la lista
 </a>
 
-@switch (resultado().estado) {
-  @case ('encontrada') {
-    @if (actividad(); as a) {
-      <article class="detalle">
-        <h2>{{ a.titulo }}</h2>
+@if (actividad(); as a) {
+  <article class="detalle">
+    <h2>{{ a.titulo }}</h2>
 
-        <p>
-          Prioridad {{ a.prioridad }}
-        </p>
+    <p>
+      Prioridad:
+      {{ a.prioridad }}
+    </p>
 
-        <p>
-          {{ etiquetas[a.estado] }}
-        </p>
+    <p>
+      Estado:
+      {{ a.estado }}
+    </p>
 
-        <p>
-          Creada el {{ a.creadaEn }}
-        </p>
+    <p>
+      Creada:
+      {{ a.creadaEn }}
+    </p>
 
-        <button
-          type="button"
-          [attr.aria-label]="'Eliminar ' + a.titulo"
-          (click)="eliminar()"
-        >
-          Eliminar
-        </button>
-      </article>
+    @if (a.descripcion) {
+      <p class="descripcion">
+        {{ a.descripcion }}
+      </p>
     }
-  }
 
-  @case ('ausente') {
-    <div class="detalle">
-      <h2>Esa actividad ya no existe</h2>
+    <div class="acciones">
+      <a
+        [routerLink]="[
+          '/actividades',
+          a.id,
+          'editar'
+        ]"
+      >
+        Editar
+      </a>
 
-      <p>
-        Puede que se eliminara, o que el enlace
-        sea antiguo.
-      </p>
+      <button
+        type="button"
+        [attr.aria-label]="'Eliminar ' + a.titulo"
+        (click)="eliminar()"
+      >
+        Eliminar
+      </button>
     </div>
-  }
-
-  @case ('invalido') {
-    <div class="detalle">
-      <h2>Esa dirección no es válida</h2>
-
-      <p>
-        El identificador de una actividad es un número.
-      </p>
-    </div>
-  }
+  </article>
 }

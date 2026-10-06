@@ -11,11 +11,18 @@ export type Prioridad =
 export interface Actividad {
   id: number;
   titulo: string;
+  descripcion: string;
   estado: EstadoActividad;
   prioridad: Prioridad;
   creadaEn: string;
   destacada: boolean;
 }
+
+export const LIMITES = {
+  tituloMin: 3,
+  tituloMax: 80,
+  descripcionMax: 300,
+} as const;
 
 export type FiltroEstado =
   EstadoActividad |
@@ -76,6 +83,7 @@ export function esActividad(
     Number.isInteger(valor['id']) &&
     valor['id'] > 0 &&
     typeof valor['titulo'] === 'string' &&
+    typeof valor['descripcion'] === 'string' &&
     valor['titulo'].trim().length > 0 &&
     esEstadoActividad(valor['estado']) &&
     esPrioridad(valor['prioridad']) &&
