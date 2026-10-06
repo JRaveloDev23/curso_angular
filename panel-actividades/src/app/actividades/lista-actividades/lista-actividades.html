@@ -1,27 +1,32 @@
-<ul class="lista">
+<section class="lista">
   @for (actividad of actividades(); track actividad.id) {
-    <li>
+    <article class="actividad">
       <app-tarjeta-actividad
         [actividad]="actividad"
-        [seleccionada]="seleccionadaId() === actividad.id"
-        (seleccionCambiada)="seleccionCambiada.emit($event)"
-        (destacadoCambiado)="destacadoCambiado.emit($event)"
-        (avanceSolicitado)="avanceSolicitado.emit($event)"
-        (eliminacionSolicitada)="eliminacionSolicitada.emit($event)"
+        [seleccionada]="actividad.id === seleccionadaId()"
+        (seleccionadaCambiada)="seleccionCambiada.emit(actividad.id)"
+        (destacadaCambiada)="destacadoCambiado.emit(actividad.id)"
+        (avanceSolicitado)="avanceSolicitado.emit(actividad.id)"
+        (eliminacionSolicitada)="eliminacionSolicitada.emit(actividad.id)"
       />
-    </li>
-  } @empty {
-    <li class="vacio">
-      <p>{{ mensajeVacio() }}</p>
 
-      @if (hayFiltros()) {
-        <button
-          type="button"
-          (click)="limpiezaSolicitada.emit()"
-        >
-          Quitar los filtros
-        </button>
-      }
-    </li>
+      <a
+        class="enlace-detalle"
+        [routerLink]="['/actividades', actividad.id]"
+      >
+        Ver detalle de {{ actividad.titulo }}
+      </a>
+    </article>
+  } @empty {
+    <p>{{ mensajeVacio() }}</p>
+
+    @if (hayFiltros()) {
+      <button
+        type="button"
+        (click)="limpiezaSolicitada.emit()"
+      >
+        Limpiar filtros
+      </button>
+    }
   }
-</ul>
+</section>

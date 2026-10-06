@@ -3,7 +3,7 @@ import {
   computed,
   effect,
   inject,
-  signal,
+  input,
 } from '@angular/core';
 
 import {
@@ -17,6 +17,11 @@ import { ResumenActividades } from '../resumen-actividades/resumen-actividades';
 import { ListaActividades } from '../lista-actividades/lista-actividades';
 import { FiltrosActividades } from '../filtros-actividades/filtros-actividades';
 import { ActividadesService } from '../actividades';
+
+import {
+  ActivatedRoute,
+  Router,
+} from '@angular/router';
 
 @Component({
   selector: 'app-pagina-actividades',
@@ -33,6 +38,12 @@ export class PaginaActividades {
   private readonly servicio =
     inject(ActividadesService);
 
+  private readonly router =
+    inject(Router);
+
+  private readonly ruta =
+    inject(ActivatedRoute);
+
   private readonly orden: Record<
     Prioridad,
     number
@@ -41,6 +52,34 @@ export class PaginaActividades {
     media: 1,
     baja: 2,
   };
+
+  readonly buscar =
+    input<string | undefined>('');
+
+  readonly estado =
+    input<FiltroEstado | undefined>(
+      'todas',
+    );
+
+  readonly prioridad =
+    input<FiltroPrioridad | undefined>(
+      'todas',
+    );
+
+  protected readonly termino =
+    computed(
+      () => this.buscar() ?? '',
+    );
+
+  protected readonly filtroEstado =
+    computed(
+      () => this.estado() ?? 'todas',
+    );
+
+  protected readonly filtroPrioridad =
+    computed(
+      () => this.prioridad() ?? 'todas',
+    );
 
   protected readonly actividades =
     this.servicio.actividades;
@@ -66,57 +105,50 @@ export class PaginaActividades {
   protected readonly sinGuardar =
     this.servicio.sinGuardar;
 
-  protected readonly termino =
-    signal('');
-
-  protected readonly filtroEstado =
-    signal<FiltroEstado>('todas');
-
-  protected readonly filtroPrioridad =
-    signal<FiltroPrioridad>('todas');
-
   protected readonly seleccionadaId =
-    signal<number | null>(null);
+    input<number | null>(null);
 
-  protected readonly visibles = computed(() => {
-    const termino = this.termino()
-      .trim()
-      .toLocaleLowerCase('es');
+  protected readonly visibles =
+    computed(() => {
+      const termino = this
+        .termino()
+        .trim()
+        .toLocaleLowerCase('es');
 
-    const estado =
-      this.filtroEstado();
+      const estado =
+        this.filtroEstado();
 
-    const prioridad =
-      this.filtroPrioridad();
+      const prioridad =
+        this.filtroPrioridad();
 
-    return this.actividades()
-      .filter(
-        (actividad) =>
-          termino === '' ||
-          actividad.titulo
-            .toLocaleLowerCase('es')
-            .includes(termino),
-      )
-      .filter(
-        (actividad) =>
-          estado === 'todas' ||
-          actividad.estado === estado,
-      )
-      .filter(
-        (actividad) =>
-          prioridad === 'todas' ||
-          actividad.prioridad === prioridad,
-      )
-      .sort(
-        (primera, segunda) =>
-          this.orden[
-            primera.prioridad
-          ] -
-          this.orden[
-            segunda.prioridad
-          ],
-      );
-  });
+      return this.actividades()
+        .filter(
+          (actividad) =>
+            termino === '' ||
+            actividad.titulo
+              .toLocaleLowerCase('es')
+              .includes(termino),
+        )
+        .filter(
+          (actividad) =>
+            estado === 'todas' ||
+            actividad.estado === estado,
+        )
+        .filter(
+          (actividad) =>
+            prioridad === 'todas' ||
+            actividad.prioridad === prioridad,
+        )
+        .sort(
+          (primera, segunda) =>
+            this.orden[
+              primera.prioridad
+            ] -
+            this.orden[
+              segunda.prioridad
+            ],
+        );
+    });
 
   protected readonly mostradas =
     computed(
@@ -127,8 +159,7 @@ export class PaginaActividades {
     computed(
       () =>
         this.termino().trim() !== '' ||
-        this.filtroEstado() !==
-          'todas' ||
+        this.filtroEstado() !== 'todas' ||
         this.filtroPrioridad() !==
           'todas',
     );
@@ -158,19 +189,65 @@ export class PaginaActividades {
     });
   }
 
+  protected cambiarBuscar(
+    valor: string,
+  ): void {
+    this.actualizar({
+      buscar:
+        valor.trim() === ''
+          ? null
+          : valor,
+    });
+  }
+
+  protected cambiarEstado(
+    valor: FiltroEstado,
+  ): void {
+    this.actualizar({
+      estado:
+        valor === 'todas'
+          ? null
+          : valor,
+    });
+  }
+
+  protected cambiarPrioridad(
+    valor: FiltroPrioridad,
+  ): void {
+    this.actualizar({
+      prioridad:
+        valor === 'todas'
+          ? null
+          : valor,
+    });
+  }
+
   protected limpiarFiltros(): void {
-    this.termino.set('');
-    this.filtroEstado.set('todas');
-    this.filtroPrioridad.set('todas');
+    this.actualizar({
+      buscar: null,
+      estado: null,
+      prioridad: null,
+    });
+  }
+
+  private actualizar(
+    cambios: Record<
+      string,
+      string | null
+    >,
+  ): void {
+    this.router.navigate([], {
+      relativeTo: this.ruta,
+      queryParams: cambios,
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   protected seleccionar(
     id: number,
   ): void {
-    this.seleccionadaId.update(
-      (actual) =>
-        actual === id ? null : id,
-    );
+    // Se mantiene la selección local.
   }
 
   protected alternarDestacada(
@@ -189,16 +266,5 @@ export class PaginaActividades {
     id: number,
   ): void {
     this.servicio.eliminar(id);
-
-    this.seleccionadaId.update(
-      (actual) =>
-        actual === id ? null : actual,
-    );
-  }
-
-  protected restablecer(): void {
-    this.servicio.vaciar();
-    this.limpiarFiltros();
-    this.seleccionadaId.set(null);
   }
 }

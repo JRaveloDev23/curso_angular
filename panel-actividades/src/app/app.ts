@@ -1,19 +1,17 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ResumenActividades } from './actividades/resumen-actividades/resumen-actividades';
-import { TarjetaActividad } from './actividades/tarjeta-actividad/tarjeta-actividad';
-import { ListaActividades } from './actividades/lista-actividades/lista-actividades';
-import { PaginaActividades } from './actividades/pagina-actividades/pagina-actividades';
-import { PaginaEstadisticas } from './estadisticas/pagina-estadisticas/pagina-estadisticas';
+
+import {
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
+
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    ResumenActividades,
-    TarjetaActividad,
-    ListaActividades,
-    PaginaActividades,
-    PaginaEstadisticas
+    RouterLink,
+    RouterLinkActive,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
