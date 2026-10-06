@@ -1,15 +1,44 @@
-<section class="pagina" aria-labelledby="titulo-pagina">
-  <h2 id="titulo-pagina">Tablero de prioridades</h2>
+<section
+  class="pagina"
+  aria-labelledby="titulo-pagina"
+>
+  <h2 id="titulo-pagina">
+    Tablero de prioridades
+  </h2>
+
+  @if (aviso()) {
+    <p
+      class="aviso"
+      role="status"
+    >
+      {{ aviso() }}
+    </p>
+  }
+
+  @if (sinGuardar()) {
+    <p
+      class="aviso"
+      role="status"
+    >
+      No se pudo guardar. Tus cambios
+      se perderán al cerrar.
+    </p>
+  }
 
   @if (seleccionada(); as elegida) {
     <p class="seleccion">
       Seleccionada:
-      <strong>{{ elegida.titulo }}</strong>
-      · creada el {{ elegida.creadaEn }}
+      <strong>
+        {{ elegida.titulo }}
+      </strong>
+      · creada el
+      {{ elegida.creadaEn }}
     </p>
   }
 
-  <app-panel-seccion titulo="Resumen">
+  <app-panel-seccion
+    titulo="Resumen"
+  >
     <app-resumen-actividades
       [total]="total()"
       [pendientes]="pendientes()"
@@ -19,7 +48,9 @@
     />
   </app-panel-seccion>
 
-  <app-panel-seccion titulo="Buscar y filtrar">
+  <app-panel-seccion
+    titulo="Buscar y filtrar"
+  >
     <app-filtros-actividades
       [(termino)]="termino"
       [(estado)]="filtroEstado"
@@ -27,12 +58,20 @@
     />
 
     <p aria-live="polite">
-      {{ mostradas() }} de {{ total() }} actividades visibles
+      {{ mostradas() }} de
+      {{ total() }}
+      actividades visibles
     </p>
   </app-panel-seccion>
 
-  <app-panel-seccion titulo="Actividades">
-    <button acciones type="button" (click)="restablecer()">
+  <app-panel-seccion
+    titulo="Actividades"
+  >
+    <button
+      acciones
+      type="button"
+      (click)="restablecer()"
+    >
       Vaciar el tablero
     </button>
 

@@ -4,6 +4,7 @@ import { ResumenActividades } from './actividades/resumen-actividades/resumen-ac
 import { TarjetaActividad } from './actividades/tarjeta-actividad/tarjeta-actividad';
 import { ListaActividades } from './actividades/lista-actividades/lista-actividades';
 import { PaginaActividades } from './actividades/pagina-actividades/pagina-actividades';
+import { PaginaEstadisticas } from './estadisticas/pagina-estadisticas/pagina-estadisticas';
 @Component({
   selector: 'app-root',
   imports: [
@@ -12,6 +13,7 @@ import { PaginaActividades } from './actividades/pagina-actividades/pagina-activ
     TarjetaActividad,
     ListaActividades,
     PaginaActividades,
+    PaginaEstadisticas
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
